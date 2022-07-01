@@ -5,22 +5,29 @@ import PackageDescription
 
 let package = Package(
     name: "CalmingNotificationsModule",
+    platforms: [
+        .iOS(.v14)
+    ],
     products: [
-        // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "CalmingNotificationsModule",
             targets: ["CalmingNotificationsModule"]),
     ],
     dependencies: [
-        // Dependencies declare other packages that this package depends on.
-        // .package(url: /* package url */, from: "1.0.0"),
+        .package(name: "BabyNet",
+                 url: "https://github.com/4440449/BabyNet.git",
+                 .branch("master")),
+        .package(name: "MommysEye",
+                 url: "https://github.com/4440449/MommysEye.git",
+                 branch: ("master"))
     ],
     targets: [
-        // Targets are the basic building blocks of a package. A target can define a module or a test suite.
-        // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "CalmingNotificationsModule",
-            dependencies: []),
+            dependencies: ["BabyNet", "MommysEye"],
+            resources: [.process("LaunchScreen.storyboard"),
+                        .process("CalmingNotifications.xcdatamodeld")]
+        ),
         .testTarget(
             name: "CalmingNotificationsModuleTests",
             dependencies: ["CalmingNotificationsModule"]),
