@@ -9,9 +9,9 @@
 import UIKit
 
 
-final class SplashSceneConfigurator_CN: SceneConfiguratorProtocol_CN {
+public final class SplashSceneConfigurator_CN: SceneConfiguratorProtocol_CN {
     
-    static func configure() -> UIViewController {
+    public static func configure() -> UIViewController {
         let navigationContainer = UINavigationController()
         navigationContainer.navigationBar.isHidden = true
         let repositoryDIContainer = GatewaysRepositoryDIContainer_CN()
@@ -23,14 +23,14 @@ final class SplashSceneConfigurator_CN: SceneConfiguratorProtocol_CN {
                                            errorHandler: errorHandler,
                                            router: router)
         let splashView = SplashViewController_CN(viewModel: viewModel,
-                                           nibName: nil,
-                                           bundle: nil)
+                                                 nibName: nil,
+                                                 bundle: nil)
         navigationContainer.viewControllers = [splashView]
         return navigationContainer
     }
     
     deinit {
-//        print("SplashSceneConfigurator_CN is deinit -------- ")
+        //        print("SplashSceneConfigurator_CN is deinit -------- ")
     }
-        
+    
 }
