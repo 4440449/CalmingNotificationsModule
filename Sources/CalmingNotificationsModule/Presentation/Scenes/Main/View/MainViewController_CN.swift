@@ -42,6 +42,7 @@ class MainViewController_CN: UIViewController,
     override func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(collectionView)
+        view.addSubview(closeButton)
         view.addSubview(menuButton)
         view.addSubview(activity)
         setupLayout()
@@ -94,7 +95,6 @@ class MainViewController_CN: UIViewController,
         button.tintColor = .white
         button.setImage(UIImage(systemName: "ellipsis"), for: .normal)
         button.imageView?.layer.transform = CATransform3DMakeScale(1.3, 1.3, 0)
-        button.layer.cornerRadius = 20
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self,
                          action: #selector(menuButtonTapped),
@@ -104,6 +104,22 @@ class MainViewController_CN: UIViewController,
     
     @objc private func menuButtonTapped() {
         viewModel.menuButtonTapped()
+    }
+    
+    private var closeButton: UIButton = {
+        let button = UIButton()
+        button.tintColor = .white
+        button.setImage(UIImage(systemName: "chevron.down"), for: .normal)
+        button.imageView?.layer.transform = CATransform3DMakeScale(1.3, 1.3, 0)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self,
+                         action: #selector(closeButtonTapped),
+                         for: .touchUpInside)
+        return button
+    }()
+    
+    @objc private func closeButtonTapped() {
+        presentingViewController?.dismiss(animated: true, completion: nil)
     }
     
     private lazy var activity: UIActivityIndicatorView = {
@@ -153,6 +169,12 @@ class MainViewController_CN: UIViewController,
     
     
     private func setupLayout() {
+        
+        closeButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
+        closeButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        closeButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        closeButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        
         menuButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
         menuButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
         menuButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
