@@ -70,6 +70,7 @@ class MenuCollectionViewCell: UICollectionViewCell {
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
+        print("traitCollectionDidChange")
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
             contentView.layer.borderColor = UIColor(named: "borderColor")?.cgColor
             contentView.layer.shadowColor = UIColor(named: "topShadowColor")?.cgColor
@@ -88,11 +89,14 @@ class MenuCollectionViewCell: UICollectionViewCell {
                                  radius: 7,
                                  opacity: 1,
                                  rasterize: true)
+        contentView.layer.shadowPath = UIBezierPath(rect: contentView.bounds).cgPath
+
         self.setupShadows(color: UIColor(named: "bottomShadowColor"),
                           offset: CGSize(width: 10, height: 10),
                           radius: 7,
                           opacity: 1,
                           rasterize: true)
+        self.layer.shadowPath = UIBezierPath(rect: self.bounds).cgPath
     }
     
     
