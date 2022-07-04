@@ -169,7 +169,6 @@ class MainViewController_CN: UIViewController,
     
     
     private func setupLayout() {
-        
         closeButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
         closeButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
         closeButton.widthAnchor.constraint(equalToConstant: 50).isActive = true

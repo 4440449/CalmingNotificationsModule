@@ -72,7 +72,7 @@ class MainCollectionViewCell_CN: UICollectionViewCell {
         let button = UIButton()
         button.setImage(UIImage(systemName: "heart"), for: .normal)
         button.setImage(UIImage(systemName: "heart.fill"), for: .selected)
-        button.imageView?.layer.transform = CATransform3DMakeScale(1.3, 1.3, 0)
+        button.imageView?.layer.transform = CATransform3DMakeScale(1.4, 1.4, 0)
         button.tintColor = .systemRed
         button.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -94,7 +94,7 @@ class MainCollectionViewCell_CN: UICollectionViewCell {
     private lazy var shareButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "square.and.arrow.down"), for: .normal)
-        button.imageView?.layer.transform = CATransform3DMakeScale(1.3, 1.3, 0)
+        button.imageView?.layer.transform = CATransform3DMakeScale(1.4, 1.4, 0)
         button.tintColor = .white
         button.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -116,13 +116,13 @@ class MainCollectionViewCell_CN: UICollectionViewCell {
         quoteLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20).isActive = true
         quoteLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
         
-        likeButton.topAnchor.constraint(equalTo: quoteLabel.bottomAnchor, constant: 30).isActive = true
-        likeButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor, constant: -23).isActive = true
+        likeButton.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor, constant: -40).isActive = true
+        likeButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor, constant: -33).isActive = true
         likeButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
         likeButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
-        shareButton.topAnchor.constraint(equalTo: quoteLabel.bottomAnchor, constant: 28).isActive = true
-        shareButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor, constant: 23).isActive = true
+        shareButton.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor, constant: -43).isActive = true
+        shareButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor, constant: 33).isActive = true
         shareButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
         shareButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
