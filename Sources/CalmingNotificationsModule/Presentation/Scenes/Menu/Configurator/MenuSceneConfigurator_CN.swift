@@ -19,9 +19,13 @@ final class MenuSceneConfigurator_CN: SceneConfiguratorProtocol_CN {
         let viewModel = MenuViewModel_CN(router: router,
                                          errorHandler: errorHandler,
                                          repository: repo)
+        let customTransition = MenuTransitionDelegate_CN()
         let view = MenuViewController_CN(viewModel: viewModel,
+                                         customTransition: customTransition,
                                          nibName: nil,
                                          bundle: nil)
+        view.modalPresentationStyle = .custom
+        view.transitioningDelegate = customTransition
         router.view = view
         return view
     }

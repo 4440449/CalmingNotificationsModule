@@ -15,14 +15,17 @@ class MenuViewController_CN: UIViewController,
     // MARK: - Dependencies
 
     private let viewModel: MenuViewModel_CN
+    private let customTransition: UIViewControllerTransitioningDelegate
     
     
     // MARK: - Init
     
     init(viewModel: MenuViewModel_CN,
+         customTransition: UIViewControllerTransitioningDelegate,
                   nibName nibNameOrNil: String?,
                   bundle nibBundleOrNil: Bundle?) {
         self.viewModel = viewModel
+        self.customTransition = customTransition
         super.init(nibName: nibNameOrNil,
                    bundle: nibBundleOrNil)
     }
@@ -36,6 +39,8 @@ class MenuViewController_CN: UIViewController,
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.layer.cornerRadius = 14
+        view.layer.masksToBounds = true
         view.addSubview(collectionView)
         setupObservers()
         viewModel.viewDidLoad()
@@ -61,8 +66,7 @@ class MenuViewController_CN: UIViewController,
                             forCellWithReuseIdentifier: MenuCollectionViewCell.identifier)
         collection.dataSource = self
         collection.delegate = self
-        collection.showsVerticalScrollIndicator = false
-        collection.alwaysBounceVertical = true
+        collection.isScrollEnabled = false
         collection.contentInset.top = 70
         return collection
     }()
@@ -85,7 +89,6 @@ class MenuViewController_CN: UIViewController,
     //MARK: - Delegate
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        self.dismiss(animated: true, completion: nil)
         viewModel.didSelectItemAt(index: indexPath.row)
     }
     
