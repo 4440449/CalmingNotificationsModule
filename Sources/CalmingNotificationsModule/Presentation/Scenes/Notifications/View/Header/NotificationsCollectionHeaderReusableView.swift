@@ -110,7 +110,6 @@ class NotificationsCollectionHeaderReusableView: UICollectionReusableView {
     }()
     
     @objc func notificationStatusButtonTapped() {
-        print(notificationStatusButtonTapped)
         if let appSettings = URL(string: UIApplication.openSettingsURLString),
            UIApplication.shared.canOpenURL(appSettings) {
             UIApplication.shared.open(appSettings)

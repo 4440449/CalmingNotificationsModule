@@ -14,8 +14,9 @@ protocol SplashViewModelProtocol_CN {
     var progress: Publisher<Float> { get }
     var isHiddenProgressBar: Publisher<Bool> { get }
     var isHiddenReloadButton: Publisher<Bool> { get }
+    var isHiddenCloseButton: Publisher<Bool> { get }
     var error: Publisher<String> { get }
-    func downloadInitialData()
+    func reloadButtonTapped()
     func closeAlert()
 }
 
@@ -46,6 +47,7 @@ final class SplashViewModel_CN: SplashViewModelProtocol_CN {
     var progress = Publisher(value: Float(0))
     var isHiddenProgressBar = Publisher(value: false)
     var isHiddenReloadButton = Publisher(value: true)
+    var isHiddenCloseButton = Publisher(value: true)
     var error = Publisher(value: "")
     
     
@@ -56,9 +58,10 @@ final class SplashViewModel_CN: SplashViewModelProtocol_CN {
     
     // MARK: - Interface
     
-    func downloadInitialData() {
+    func reloadButtonTapped() {
         isHiddenProgressBar.value = false
         isHiddenReloadButton.value = true
+        isHiddenCloseButton.value = true
         quoteTask = Task {
             do {
                 try await quoteCardRepository.setState(taskProgressCallback: { [weak self] progress in
@@ -85,8 +88,9 @@ final class SplashViewModel_CN: SplashViewModelProtocol_CN {
         guard let action = sceneError.action else { return }
         switch action {
         case .tryToReloadData:
-            self.isHiddenProgressBar.value = true
-            self.isHiddenReloadButton.value = false
+            isHiddenProgressBar.value = true
+            isHiddenReloadButton.value = false
+            isHiddenCloseButton.value = false
         }
     }
     

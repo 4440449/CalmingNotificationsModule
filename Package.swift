@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "CalmingNotificationsModule",
     platforms: [
-        .iOS(.v14)
+        .iOS(.v13)
     ],
     products: [
         .library(
@@ -25,8 +25,7 @@ let package = Package(
         .target(
             name: "CalmingNotificationsModule",
             dependencies: ["BabyNet", "MommysEye"],
-            resources: [.process("LaunchScreen.storyboard"),
-                        .process("CalmingNotifications.xcdatamodeld")]
+            resources: [.process("Data/Gateways/QuoteCard/LocalStorage/Entities/QuoteCardDBEntity/CalmingNotifications.xcdatamodeld")]
         ),
         .testTarget(
             name: "CalmingNotificationsModuleTests",

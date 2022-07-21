@@ -14,6 +14,7 @@ protocol FavoritesViewModelProtocol_CN {
     func dismissButtonTapped()
     var quoteCards: Publisher<[QuoteCard_CN]> { get }
     var isLoading: Publisher<Loading_CN> { get }
+    var showSuccessAnimation: Publisher<Bool> { get }
     var error: Publisher<String> { get }
 }
 
@@ -41,6 +42,7 @@ final class FavoritesViewModel_CN: FavoritesViewModelProtocol_CN,
         self.router = router
         self.quoteCardRepository = quoteCardRepository
         self.errorHandler = errorHandler
+//        loadInitialState()
     }
     
     
@@ -48,6 +50,7 @@ final class FavoritesViewModel_CN: FavoritesViewModelProtocol_CN,
     
     var quoteCards = Publisher(value: [QuoteCard_CN]())
     var isLoading = Publisher(value: Loading_CN.false)
+    var showSuccessAnimation = Publisher(value: false)
     var error = Publisher(value: "")
     
     
@@ -68,12 +71,19 @@ final class FavoritesViewModel_CN: FavoritesViewModelProtocol_CN,
             do {
                 let result = try await quoteCardRepository.fetchFavorites()
                 self.quoteCards.value = result
-                //                self.quoteCards.value = []
             } catch let domainError {
                 let sceneError = self.errorHandler.handle(domainError)
                 self.handle(sceneError)
             }
             self.isLoading.value = .false
+        }
+    }
+    
+    private func loadInitialState() {
+        quoteTask = Task {
+            let result = try await quoteCardRepository.fetchFavorites()
+    //        print(result.count)
+            self.quoteCards.value = result
         }
     }
     
@@ -118,7 +128,9 @@ final class FavoritesViewModel_CN: FavoritesViewModelProtocol_CN,
             text: quoteCard.quote,
             textAttributes: setup.textAttributes,
             textFrame: setup.textFrame) else { return }
-        router.shareButtonTapped(with: quoteCardImage)
+        router.shareButtonTapped(with: quoteCardImage) { [weak self] toAnimate in
+            self?.showSuccessAnimation.value = toAnimate
+        }
     }
     
     

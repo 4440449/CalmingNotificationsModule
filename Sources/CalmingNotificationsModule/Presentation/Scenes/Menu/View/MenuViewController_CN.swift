@@ -13,7 +13,7 @@ class MenuViewController_CN: UIViewController,
                              UICollectionViewDelegateFlowLayout {
     
     // MARK: - Dependencies
-
+    
     private let viewModel: MenuViewModel_CN
     private let customTransition: UIViewControllerTransitioningDelegate
     
@@ -22,8 +22,8 @@ class MenuViewController_CN: UIViewController,
     
     init(viewModel: MenuViewModel_CN,
          customTransition: UIViewControllerTransitioningDelegate,
-                  nibName nibNameOrNil: String?,
-                  bundle nibBundleOrNil: Bundle?) {
+         nibName nibNameOrNil: String?,
+         bundle nibBundleOrNil: Bundle?) {
         self.viewModel = viewModel
         self.customTransition = customTransition
         super.init(nibName: nibNameOrNil,
@@ -36,10 +36,13 @@ class MenuViewController_CN: UIViewController,
     
     
     // MARK: - View's lifecycle
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         view.layer.cornerRadius = 14
+        view.layer.maskedCorners = [.layerMinXMinYCorner,
+                                    .layerMaxXMinYCorner]
         view.layer.masksToBounds = true
         view.addSubview(collectionView)
         setupObservers()
@@ -48,7 +51,7 @@ class MenuViewController_CN: UIViewController,
     
     
     // MARK: - Input data flow
-
+    
     private func setupObservers() {
         viewModel.menuItems.subscribe(observer: self) { [weak self] _ in
             self?.collectionView.reloadData()
@@ -57,7 +60,7 @@ class MenuViewController_CN: UIViewController,
     
     
     // MARK: - UI -
-
+    
     private lazy var collectionView: UICollectionView = {
         let collection = UICollectionView(frame: view.bounds,
                                           collectionViewLayout: UICollectionViewFlowLayout())
@@ -70,7 +73,7 @@ class MenuViewController_CN: UIViewController,
         collection.contentInset.top = 70
         return collection
     }()
-        
+    
     
     //MARK: - Data source
     
@@ -106,9 +109,9 @@ class MenuViewController_CN: UIViewController,
     
     
     deinit {
-//        print("deinit NotificationsViewController_CN")
+        //        print("deinit NotificationsViewController_CN")
     }
-
+    
 }
 
 

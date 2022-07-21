@@ -35,7 +35,9 @@ class FavoritesCollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        [logoLabel, quoteLabel, likeButton, shareButton].forEach { self.contentView.addSubview($0) }
+        self.contentView.addSubview(quoteLabel)
+        self.contentView.addSubview(likeButton)
+        self.contentView.addSubview(shareButton)
         setupLayout()
     }
     
@@ -43,22 +45,14 @@ class FavoritesCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
-    // MARK: - UI
-    
     func fillContent(quote: String, image: UIImage) {
         quoteLabel.text = quote
         contentView.backgroundColor = UIColor(patternImage: image)
     }
     
-    private var logoLabel: UILabel = {
-        let label = UILabel()
-        //        label.text = "Mom's Exhale"
-        label.textAlignment = .center
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+    // MARK: - UI
     
+    // Properties
     private var quoteLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "Montserrat-Regular", size: 18)!
@@ -69,18 +63,19 @@ class FavoritesCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-     private lazy var likeButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(systemName: "heart"), for: .normal)
-        button.setImage(UIImage(systemName: "heart.fill"), for: .selected)
-         button.imageView?.layer.transform = CATransform3DMakeScale(1.3, 1.3, 0)
-        button.tintColor = .systemRed
-        button.addTarget(self, action: #selector(favoritelikeButtonTapped), for: .touchUpInside)
+    private lazy var likeButton: UIButton = {
+        let button = LikeButton_CN()
+        button.setImage(UIImage(named: "heart"), for: .normal)
+        button.setImage(UIImage(named: "heart.fill"), for: .selected)
+        button.setImage(UIImage(named: "heart.transparent"), for: [.normal, .highlighted])
+        button.setImage(UIImage(named: "heart.fill.transparent"), for: [.selected, .highlighted])
+        button.imageView?.layer.transform = CATransform3DMakeScale(1.2, 1.2, 0)
+        button.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
-    @objc func favoritelikeButtonTapped() {
+    @objc func likeButtonTapped() {
         guard let index = index else { return }
         viewModel?.likeButtonTapped(cellWithIndex: index)
     }
@@ -94,9 +89,8 @@ class FavoritesCollectionViewCell: UICollectionViewCell {
     
     private lazy var shareButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "square.and.arrow.down"), for: .normal)
-        button.imageView?.layer.transform = CATransform3DMakeScale(1.3, 1.3, 0)
-        button.tintColor = .white
+        button.setImage(UIImage(named: "square.and.arrow.up"), for: .normal)
+        button.imageView?.layer.transform = CATransform3DMakeScale(1.2, 1.2, 0)
         button.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -107,13 +101,8 @@ class FavoritesCollectionViewCell: UICollectionViewCell {
         viewModel?.shareButtonTapped(cellWithIndex: index)
     }
     
-    
-    
+    // Layout
     private func setupLayout() {
-        logoLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20).isActive = true
-        logoLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
-        logoLabel.bottomAnchor.constraint(equalTo: quoteLabel.topAnchor, constant: -40).isActive = true
-        
         quoteLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
         quoteLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20).isActive = true
         quoteLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
@@ -123,10 +112,46 @@ class FavoritesCollectionViewCell: UICollectionViewCell {
         likeButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
         likeButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
-        shareButton.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor, constant: -43).isActive = true
+        shareButton.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor, constant: -41).isActive = true
         shareButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor, constant: 33).isActive = true
         shareButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
         shareButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+    }
+    
+    // Animation
+    func discardPreparingAnimation() {
+        self.quoteLabel.alpha = 1
+        self.likeButton.alpha = 1
+        self.shareButton.alpha = 1
+    }
+    
+    func prepareFadeAnimation() {
+        self.quoteLabel.alpha = 0
+        self.likeButton.alpha = 0
+        self.shareButton.alpha = 0
+    }
+    
+    func startFadeAnimation() {
+        DispatchQueue.main.async {
+            UIView.animate(withDuration: 1.5,
+                           delay: 0.5,
+                           usingSpringWithDamping: 1,
+                           initialSpringVelocity: 0,
+                           options: .curveEaseInOut) {
+                self.quoteLabel.alpha = 1
+            } completion: { _ in
+                UIView.animate(withDuration: 1.3,
+                               delay: 0.1,
+                               usingSpringWithDamping: 1,
+                               initialSpringVelocity: 0,
+                               options: .curveEaseInOut,
+                               animations: {
+                    self.likeButton.alpha = 1
+                    self.shareButton.alpha = 1
+                },
+                               completion: nil)
+            }
+        }
     }
     
     deinit {

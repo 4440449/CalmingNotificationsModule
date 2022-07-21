@@ -23,6 +23,16 @@ class NotificationsCollectionViewCell_CN: UICollectionViewCell {
     
     private var index: Int?
     
+    override var isHighlighted: Bool {
+      didSet {
+        UIView.animate(withDuration: 0.15) {
+          let scale: CGFloat = 0.97
+          self.transform = self.isHighlighted ? CGAffineTransform(scaleX: scale, y: scale) : .identity
+            self.alpha = self.isHighlighted ? 0.6 : 1
+        }
+      }
+    }
+    
     
     // MARK: - Cell's setup
     

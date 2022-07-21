@@ -15,7 +15,6 @@ protocol NotificationsViewModelProtocol_CN {
     // MARK: Input
     func viewDidLoad()
     func sceneWillEnterForeground()
-    func example() -> ((Int) -> ())
     // MARK: Output
     var notifications: Publisher<[Notification_CN]> { get }
     var pushNotificationAuthStatus: Publisher<PushNotificationsAuthStatus_CN> { get }
@@ -40,12 +39,6 @@ protocol NotificationsCellViewModelProtocol_CN {
 final class NotificationsViewModel_CN: NotificationsViewModelProtocol_CN,
                                        NotificationsHeaderViewModelProtocol_CN,
                                        NotificationsCellViewModelProtocol_CN {
-    func example() -> ((Int) -> ()) {
-        return { number in
-            print(number)
-        }
-    }
-    
     
     // MARK: - Dependencies
     

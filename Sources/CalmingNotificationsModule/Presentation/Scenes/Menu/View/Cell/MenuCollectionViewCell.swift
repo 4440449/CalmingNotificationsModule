@@ -28,13 +28,20 @@ class MenuCollectionViewCell: UICollectionViewCell {
     
     
     // MARK: - UI -
-    
-//    var t: UIButton(type: .system) = { }()
+        
+    override var isHighlighted: Bool {
+      didSet {
+        UIView.animate(withDuration: 0.2) {
+          let scale: CGFloat = 0.95
+          self.transform = self.isHighlighted ? CGAffineTransform(scaleX: scale, y: scale) : .identity
+            self.alpha = self.isHighlighted ? 0.6 : 1
+        }
+      }
+    }
     
     private lazy var title: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "heart.fill"), for: .disabled)
-//        button.imageView?.layer.transform = CATransform3DMakeScale(1.3, 1.3, 0)
         button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -15, bottom: 0, right: 0)
         button.setTitleColor(.label, for: .disabled)
         button.titleLabel?.font = UIFont(name: "Montserrat-Regular", size: 16)!
@@ -63,14 +70,12 @@ class MenuCollectionViewCell: UICollectionViewCell {
 //    }()
     
     func setupTitleButton(_ text: String, image: UIImage) {
-//        title.text = text
         title.setTitle(text, for: .disabled)
         title.setImage(image, for: .disabled)
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-        print("traitCollectionDidChange")
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
             contentView.layer.borderColor = UIColor(named: "borderColor")?.cgColor
             contentView.layer.shadowColor = UIColor(named: "topShadowColor")?.cgColor

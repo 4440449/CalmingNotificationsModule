@@ -35,14 +35,12 @@ final class MainViewModel_CN: MainViewModelProtocol_CN,
     private let errorHandler: MainErrorHandlerProtocol_CN
     
     init(quoteCardRepository: QuoteCardGateway_CN,
-        router: MainRouterProtocol_CN,
-        errorHandler: MainErrorHandlerProtocol_CN) {
-            //         quoteCards: [QuoteCard_CN]) {
-            self.quoteCardRepository = quoteCardRepository
-            //        self.quoteCards.value = quoteCards
-            self.router = router
-            self.errorHandler = errorHandler
-        }
+         router: MainRouterProtocol_CN,
+         errorHandler: MainErrorHandlerProtocol_CN) {
+        self.quoteCardRepository = quoteCardRepository
+        self.router = router
+        self.errorHandler = errorHandler
+    }
     
     // MARK: - State
     
@@ -83,7 +81,6 @@ final class MainViewModel_CN: MainViewModelProtocol_CN,
                     var quoteCard = self.quoteCards.value[index]
                     quoteCard.isFavorite = true
                     try await self.quoteCardRepository.saveFavorite(quoteCard)
-                    self.quoteCards.value[index].isFavorite = true
                 } catch let domainError {
                     let sceneError = self.errorHandler.handle(domainError)
                     self.handle(sceneError)
@@ -95,8 +92,6 @@ final class MainViewModel_CN: MainViewModelProtocol_CN,
                     var quoteCard = self.quoteCards.value[index]
                     quoteCard.isFavorite = false
                     try await self.quoteCardRepository.deleteFavorite(quoteCard)
-                    self.quoteCards.value[index].isFavorite = false
-                    //                    self.quoteCards.value = result
                 } catch let domainError {
                     let sceneError = self.errorHandler.handle(domainError)
                     self.handle(sceneError)

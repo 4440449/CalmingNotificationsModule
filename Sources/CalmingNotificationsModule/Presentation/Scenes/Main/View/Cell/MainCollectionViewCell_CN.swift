@@ -35,7 +35,10 @@ class MainCollectionViewCell_CN: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        [mainImage, quoteLabel, likeButton, shareButton].forEach { self.contentView.addSubview($0) }
+        self.contentView.addSubview(mainImage)
+        self.contentView.addSubview(quoteLabel)
+        self.contentView.addSubview(likeButton)
+        self.contentView.addSubview(shareButton)
         setupLayout()
     }
     
@@ -43,14 +46,14 @@ class MainCollectionViewCell_CN: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
-    // MARK: - UI
-    
     func fillContent(quote: String, image: UIImage) {
         quoteLabel.text = quote
         mainImage.image = image
     }
     
+    // MARK: - UI
+
+    // Properties
     private var mainImage: UIImageView = {
         let image = UIImageView()
         image.contentMode = .scaleAspectFill
@@ -69,11 +72,12 @@ class MainCollectionViewCell_CN: UICollectionViewCell {
     }()
     
     private lazy var likeButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(systemName: "heart"), for: .normal)
-        button.setImage(UIImage(systemName: "heart.fill"), for: .selected)
-        button.imageView?.layer.transform = CATransform3DMakeScale(1.4, 1.4, 0)
-        button.tintColor = .systemRed
+        let button = LikeButton_CN()
+        button.setImage(UIImage(named: "heart"), for: .normal)
+        button.setImage(UIImage(named: "heart.fill"), for: .selected)
+        button.setImage(UIImage(named: "heart.transparent"), for: [.normal, .highlighted])
+        button.setImage(UIImage(named: "heart.fill.transparent"), for: [.selected, .highlighted])
+        button.imageView?.layer.transform = CATransform3DMakeScale(1.2, 1.2, 0)
         button.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -86,16 +90,17 @@ class MainCollectionViewCell_CN: UICollectionViewCell {
     
     func setLikeButtonsState(isFavorite: Bool) {
         switch isFavorite {
-        case true: likeButton.isSelected = true
-        case false: likeButton.isSelected = false
+        case true:
+            likeButton.isSelected = true
+        case false:
+            likeButton.isSelected = false
         }
     }
     
     private lazy var shareButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "square.and.arrow.down"), for: .normal)
-        button.imageView?.layer.transform = CATransform3DMakeScale(1.4, 1.4, 0)
-        button.tintColor = .white
+        button.setImage(UIImage(named: "square.and.arrow.up"), for: .normal)
+        button.imageView?.layer.transform = CATransform3DMakeScale(1.2, 1.2, 0)
         button.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -106,6 +111,7 @@ class MainCollectionViewCell_CN: UICollectionViewCell {
         viewModel?.shareButtonTapped(cellWithIndex: index)
     }
     
+    // Layout
     private func setupLayout() {
         mainImage.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
         mainImage.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
@@ -121,10 +127,46 @@ class MainCollectionViewCell_CN: UICollectionViewCell {
         likeButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
         likeButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
-        shareButton.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor, constant: -43).isActive = true
+        shareButton.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor, constant: -41).isActive = true // -43
         shareButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor, constant: 33).isActive = true
         shareButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
         shareButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+    }
+    
+    // Animation
+    func discardPreparingAnimation() {
+        self.quoteLabel.alpha = 1
+        self.likeButton.alpha = 1
+        self.shareButton.alpha = 1
+    }
+    
+    func prepareFadeAnimation() {
+        self.quoteLabel.alpha = 0
+        self.likeButton.alpha = 0
+        self.shareButton.alpha = 0
+    }
+    
+    func startFadeAnimation() {
+        DispatchQueue.main.async {
+            UIView.animate(withDuration: 1.5,
+                           delay: 0.5,
+                           usingSpringWithDamping: 1,
+                           initialSpringVelocity: 0,
+                           options: .curveEaseInOut) {
+                self.quoteLabel.alpha = 1
+            } completion: { _ in
+                UIView.animate(withDuration: 1.3,
+                               delay: 0.1,
+                               usingSpringWithDamping: 1,
+                               initialSpringVelocity: 0,
+                               options: .curveEaseInOut,
+                               animations: {
+                    self.likeButton.alpha = 1
+                    self.shareButton.alpha = 1
+                },
+                               completion: nil)
+            }
+        }
     }
     
 }

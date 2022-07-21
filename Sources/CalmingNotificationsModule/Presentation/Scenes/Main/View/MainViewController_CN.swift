@@ -50,16 +50,13 @@ class MainViewController_CN: UIViewController,
         viewModel.viewDidLoad()
     }
     
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-    }
-    
-    
     // MARK: - Input data flow
     
     private func setupObservers() {
         viewModel.quoteCards.subscribe(observer: self) { [weak self] _ in
-            self?.collectionView.reloadData()
+            guard let strongSelf = self else { return }
+            strongSelf.collectionView.reloadItems(at: strongSelf.collectionView.cachedIndexPaths())
+            
         }
         
         viewModel.isLoading.subscribe(observer: self) { [weak self] isLoading in
@@ -68,6 +65,7 @@ class MainViewController_CN: UIViewController,
             case .false: self?.activity.stopAnimating()
             }
         }
+        
         viewModel.showSuccessAnimation.subscribe(observer: self) { [weak self] toShow in
             switch toShow {
             case true: self?.successAnimation()
@@ -83,8 +81,10 @@ class MainViewController_CN: UIViewController,
                                           collectionViewLayout: setupCollectionViewLayout())
         collection.register(MainCollectionViewCell_CN.self,
                             forCellWithReuseIdentifier: MainCollectionViewCell_CN.identifier)
+        collection.backgroundColor = .black
         collection.contentInsetAdjustmentBehavior = .never
         collection.alwaysBounceVertical = false
+        collection.alwaysBounceHorizontal = true
         collection.dataSource = self
         collection.delegate = self
         return collection
@@ -93,6 +93,7 @@ class MainViewController_CN: UIViewController,
     private var menuButton: UIButton = {
         let button = UIButton()
         button.tintColor = .white
+        button.alpha = 0
         button.setImage(UIImage(systemName: "ellipsis"), for: .normal)
         button.imageView?.layer.transform = CATransform3DMakeScale(1.3, 1.3, 0)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -109,6 +110,7 @@ class MainViewController_CN: UIViewController,
     private var closeButton: UIButton = {
         let button = UIButton()
         button.tintColor = .white
+        button.alpha = 0
         button.setImage(UIImage(systemName: "chevron.down"), for: .normal)
         button.imageView?.layer.transform = CATransform3DMakeScale(1.3, 1.3, 0)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -144,6 +146,7 @@ class MainViewController_CN: UIViewController,
         cell.fillContent(quote: viewModel.quoteCards.value[indexPath.row].quote,
                          image: viewModel.quoteCards.value[indexPath.row].image)
         cell.setLikeButtonsState(isFavorite: viewModel.quoteCards.value[indexPath.row].isFavorite)
+        
         return cell
     }
     
@@ -154,7 +157,6 @@ class MainViewController_CN: UIViewController,
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1),
                                               heightDimension: .fractionalHeight(1))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
-        //        item.contentInsets = .init(top: 1, leading: 1, bottom: 1, trailing: 1)
         
         let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1),
                                                heightDimension: .fractionalHeight(1))
@@ -183,10 +185,70 @@ class MainViewController_CN: UIViewController,
     
     // MARK: - Animation
     
+    // Collection items fade
+    private var collectionItemsWasHide = true
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionItemsWasHide ? showAnimation() : hideAnimation()
+    }
+
+    private func showAnimation() {
+        UIView.animate(withDuration: 1,
+                       delay: 0.1,
+                       usingSpringWithDamping: 1,
+                       initialSpringVelocity: 0,
+                       options: .curveEaseInOut,
+                       animations: {
+            self.closeButton.alpha = 1
+            self.menuButton.alpha = 1
+        },
+                       completion: { _ in
+            self.collectionItemsWasHide = false
+        })
+    }
+    
+    private func hideAnimation() {
+        UIView.animate(withDuration: 1,
+                       delay: 0.1,
+                       usingSpringWithDamping: 1,
+                       initialSpringVelocity: 0,
+                       options: .curveEaseInOut,
+                       animations: {
+            self.closeButton.alpha = 0
+            self.menuButton.alpha = 0
+        },
+                       completion: { _ in
+            self.collectionItemsWasHide = true
+        })
+    }
+    
+    // Cells fade
+    private var cellIndexWasAnimated = -1
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let cell = cell as? MainCollectionViewCell_CN else { return }
+        if indexPath.row != cellIndexWasAnimated {
+            cell.prepareFadeAnimation()
+        } else {
+            cell.discardPreparingAnimation()
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let visibleCell = collectionView.visibleCells[0] as? MainCollectionViewCell_CN else { return }
+        let visibleIndex = collectionView.indexPathsForVisibleItems[0].row
+        // Проверяю показывал ли я уже анимацию для этого индекса ячейки
+        guard visibleIndex != cellIndexWasAnimated else { return }
+        // Если индексы не совпадают (не показывал) - показываю
+        visibleCell.startFadeAnimation()
+        // Записываю индекс ячейки у которой показал анимацию
+        cellIndexWasAnimated = visibleIndex
+    }
+    
+    // Checkmark
     private func successAnimation() {
         animator.checkMarkAnimation(for: view)
     }
     
 }
-
 

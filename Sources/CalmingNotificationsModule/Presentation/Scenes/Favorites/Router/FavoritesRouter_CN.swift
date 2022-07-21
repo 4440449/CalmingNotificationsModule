@@ -11,7 +11,7 @@ import UIKit
 
 protocol FavoritesRouterProtocol_CN {
     func dismissButtonTapped()
-    func shareButtonTapped(with content: UIImage)
+    func shareButtonTapped(with content: UIImage, callback: @escaping (Bool) -> Void)
 }
 
 
@@ -46,9 +46,23 @@ final class FavoritesRouter_CN: FavoritesRouterProtocol_CN {
         view.dismiss(animated: true, completion: nil)
     }
     
-    func shareButtonTapped(with content: UIImage) {
+    func shareButtonTapped(with content: UIImage, callback: @escaping (Bool) -> Void) {
         let activityVC = UIActivityViewController(activityItems: [content],
                                                   applicationActivities: nil)
+        activityVC.completionWithItemsHandler = { activity, success, items, error in
+            guard success else { callback(false); return }
+            guard let activity = activity else { callback(false); return }
+            switch activity {
+            case .saveToCameraRoll:
+                callback(true)
+            default:
+                if activity.rawValue == "com.apple.DocumentManagerUICore.SaveToFiles" {
+                    callback(true)
+                } else {
+                    callback(false)
+                }
+            }
+        }
         view?.present(activityVC, animated: true, completion: nil)
     }
     

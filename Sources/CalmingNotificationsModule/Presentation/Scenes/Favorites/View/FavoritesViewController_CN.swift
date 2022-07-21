@@ -15,14 +15,16 @@ class FavoritesViewController_CN: UIViewController,
     // MARK: - Dependencies
     
     private let viewModel: FavoritesViewModelProtocol_CN
-    
+    private let animator: CheckMarkAnimatableProtocol_CN
     
     // MARK: - Init
     
     init(viewModel: FavoritesViewModelProtocol_CN,
+         animator: CheckMarkAnimatableProtocol_CN,
          nibName nibNameOrNil: String?,
          bundle nibBundleOrNil: Bundle?) {
         self.viewModel = viewModel
+        self.animator = animator
         super.init(nibName: nibNameOrNil,
                    bundle: nibBundleOrNil)
     }
@@ -54,14 +56,28 @@ class FavoritesViewController_CN: UIViewController,
     
     private func setupObservers() {
         viewModel.quoteCards.subscribe(observer: self) { [weak self] cards in
-            self?.collectionView.reloadData()
-            self?.manageEmptyScreenSetup(favoritesIsEmpty: cards.isEmpty)
+            guard let strongSelf = self else { return }
+            strongSelf.manageEmptyScreenSetup(favoritesIsEmpty: cards.isEmpty)
+            //  Обновляю закэшированную секцию, т.к. начальные данные приходят асинхронно после инициализации коллекции.
+            for s in 0..<strongSelf.collectionView.numberOfSections {
+                if strongSelf.collectionView.numberOfItems(inSection: s) == 0 {
+                    strongSelf.collectionView.reloadSections(IndexSet(integer: s))
+                }
+            }
+            strongSelf.collectionView.reloadItems(at: strongSelf.collectionView.cachedIndexPaths())
         }
         
         viewModel.isLoading.subscribe(observer: self) { [weak self] isLoading in
             switch isLoading {
             case .true: self?.activity.startAnimating()
             case .false: self?.activity.stopAnimating()
+            }
+        }
+        
+        viewModel.showSuccessAnimation.subscribe(observer: self) { [weak self] toShow in
+            switch toShow {
+            case true: self?.successAnimation()
+            case false: return
             }
         }
     }
@@ -73,9 +89,10 @@ class FavoritesViewController_CN: UIViewController,
                                           collectionViewLayout: setupCollectionViewLayout())
         collection.register(FavoritesCollectionViewCell.self,
                             forCellWithReuseIdentifier: FavoritesCollectionViewCell.identifier)
+        collection.backgroundColor = .black
         collection.contentInsetAdjustmentBehavior = .never
         collection.alwaysBounceVertical = false
-//        collection.alwaysBounceHorizontal = true
+        collection.alwaysBounceHorizontal = true
         collection.dataSource = self
         collection.delegate = self
         return collection
@@ -110,7 +127,9 @@ class FavoritesViewController_CN: UIViewController,
     
     private var emptyScreenLabel: UILabel = {
         let label = UILabel()
-        label.text = "Пока что здесь пусто, вы можете добавить понравившиеся заставки в изранное"
+        label.textColor = .white
+        label.font = UIFont(name: "Montserrat-Regular", size: 18)!
+        label.text = "Пока что здесь пусто, вы можете добавить понравившиеся изображения в изранное"
         label.textAlignment = .center
         label.numberOfLines = 0
         //        label.lineBreakMode = .byCharWrapping
@@ -172,10 +191,77 @@ class FavoritesViewController_CN: UIViewController,
         }
     }
     
+    // MARK: - Animation
+    
+    // Collection items fade
+    private var collectionItemsWasHide = true
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionItemsWasHide ? showAnimation() : hideAnimation()
+    }
+    
+    private func showAnimation() {
+        UIView.animate(withDuration: 1,
+                       delay: 0.1,
+                       usingSpringWithDamping: 1,
+                       initialSpringVelocity: 0,
+                       options: .curveEaseInOut,
+                       animations: {
+            self.dismissButton.alpha = 1
+        },
+                       completion: { _ in
+            self.collectionItemsWasHide = false
+        })
+    }
+    
+    private func hideAnimation() {
+        UIView.animate(withDuration: 1,
+                       delay: 0.1,
+                       usingSpringWithDamping: 1,
+                       initialSpringVelocity: 0,
+                       options: .curveEaseInOut,
+                       animations: {
+            self.dismissButton.alpha = 0
+        },
+                       completion: { _ in
+            self.collectionItemsWasHide = true
+        })
+    }
+    
+    // Cells fade
+    private var cellIndexWasAnimated = -1
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let cell = cell as? FavoritesCollectionViewCell else { return }
+        if indexPath.row != cellIndexWasAnimated {
+            cell.prepareFadeAnimation()
+        } else {
+            cell.discardPreparingAnimation()
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let visibleCell = collectionView.visibleCells[0] as? FavoritesCollectionViewCell else { return }
+        let visibleIndex = collectionView.indexPathsForVisibleItems[0].row
+        // Проверяю показывал ли я уже анимацию для этого индекса ячейки
+        guard visibleIndex != cellIndexWasAnimated else { return }
+        // Если индексы не совпадают (не показывал) - показываю
+        visibleCell.startFadeAnimation()
+        // Записываю индекс ячейки у которой показал анимацию
+        cellIndexWasAnimated = visibleIndex
+    }
+    
+    // Checkmark
+    private func successAnimation() {
+        animator.checkMarkAnimation(for: view)
+    }
+    
+    
+    
     
     
     deinit {
-//        print("deinit FavoritesViewController_CN")
+        //        print("deinit FavoritesViewController_CN")
     }
     
 }

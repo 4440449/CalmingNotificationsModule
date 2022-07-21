@@ -5,7 +5,6 @@
 //  Created by Maxim on 04.02.2022.
 //  Copyright © 2022 Max. All rights reserved.
 //
-
 import Foundation
 import UIKit
 
@@ -35,26 +34,14 @@ final class SplashRouter_CN: SplashRouterProtocol_CN {
     
     // MARK: - Interface
     
-    //    func startMainFlow(quoteCards: [QuoteCard_CN]) {
     func startMainFlow() {
         DispatchQueue.main.async {
-//            let navigationContainer = UINavigationController()
-//            let startVC = MainTabBarConfigurator_CN.configure(
-//                quoteCards: quoteCards,
-//                navigationContainer: navigationContainer,
-//                repositoryDIContainer: self.repositoryDIContainer )
             guard let navigation = self.navigationContainer else { fatalError() }
             let startVC = MainSceneConfigurator_CN.configure(
                 navigationContainer: navigation,
                 repositoryDIContainer: self.repositoryDIContainer)
-//            navigationContainer.pushViewController(startVC, animated: true)
+            navigation.pushViewController(startVC, animated: true)
             navigation.viewControllers = [startVC]
-//            if let sceneDelegate =
-//                UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
-//
-//                sceneDelegate.window?.rootViewController = navigationContainer
-//                sceneDelegate.window?.makeKeyAndVisible() // надо?
-//            }
         }
     }
     

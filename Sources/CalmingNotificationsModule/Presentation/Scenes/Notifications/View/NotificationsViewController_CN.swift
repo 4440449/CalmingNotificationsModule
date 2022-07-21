@@ -47,28 +47,18 @@ class NotificationsViewController_CN: UIViewController,
     }
     
     
-    // MARK: - Input data flow
+    // MARK: - Observing
     
     private func setupObservers() {
-        if let sceneDelegate =
-            UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
-            sceneDelegate.sceneState.subscribe(observer: self) { [weak self] sceneState in
-                switch sceneState {
-                case .foreground:
-                    self?.viewModel.sceneWillEnterForeground()
-                case .background:
-                    return
-                }
-            }
-        }
+        NotificationCenter.default.addObserver(self, selector: #selector(sceneWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
         
         viewModel.notifications.subscribe(observer: self) { [weak self] _ in
             self?.selectedIndex = -1
-            self?.collectionView.reloadData()
+            self?.collectionView.reloadSections(IndexSet(integer: 0))
         }
         
         viewModel.pushNotificationAuthStatus.subscribe(observer: self) { [weak self] _ in
-            self?.collectionView.reloadData()
+            self?.collectionView.reloadSections(IndexSet(integer: 0))
         }
         
         viewModel.isLoading.subscribe(observer: self) { [weak self] isLoading in
@@ -77,6 +67,10 @@ class NotificationsViewController_CN: UIViewController,
             case .false: self?.activity.stopAnimating()
             }
         }
+    }
+    
+    @objc private func sceneWillEnterForeground() {
+        viewModel.sceneWillEnterForeground()
     }
     
     
@@ -98,7 +92,6 @@ class NotificationsViewController_CN: UIViewController,
                             withReuseIdentifier: NotificationsCollectionHeaderReusableView.identifier)
         collection.dataSource = self
         collection.delegate = self
-        //        collection.contentInsetAdjustmentBehavior = .never
         collection.showsVerticalScrollIndicator = false
         collection.alwaysBounceVertical = true
         collection.contentInset.bottom = 40

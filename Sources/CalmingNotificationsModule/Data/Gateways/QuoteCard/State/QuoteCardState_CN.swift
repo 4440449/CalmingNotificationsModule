@@ -8,7 +8,6 @@
 
 import Foundation
 import MommysEye
-import UIKit
 
 
 protocol QuoteCardStateProtocol_CN {

@@ -14,13 +14,13 @@ final class QuoteCardErrorHandler_CN: DomainErrorHandlerProtocol_CN {
     
     func handle(_ dataError: Error) -> DomainError_CN {
         print(" *+*- \(dataError) *+*-")
-        if let domainError = dataError as? BabyNetError {
-            switch domainError {
+        if let networkClientError = dataError as? BabyNetError {
+            switch networkClientError {
             case .badRequest(let err):
                 if let err = err as? URLError, (err.code == .notConnectedToInternet || err.code == .dataNotAllowed) {
                     return QuoteCardError_CN.noInternetConnection
                 } else {
-                    return QuoteCardError_CN.networkError
+                    fallthrough
                 }
             default:
                 return QuoteCardError_CN.networkError

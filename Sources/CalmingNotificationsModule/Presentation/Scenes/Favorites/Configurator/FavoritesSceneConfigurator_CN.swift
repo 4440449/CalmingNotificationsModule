@@ -19,7 +19,9 @@ final class FavoritesSceneConfigurator_CN: SceneConfiguratorProtocol_CN {
         let viewModel = FavoritesViewModel_CN(router: router,
                                               quoteCardRepository: repo,
                                               errorHandler: errorHandler)
+        let animator = Animator_CN()
         let view = FavoritesViewController_CN(viewModel: viewModel,
+                                              animator: animator,
                                               nibName: nil,
                                               bundle: nil)
         router.injectView(view)
