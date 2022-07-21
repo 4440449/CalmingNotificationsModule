@@ -1,3 +1,4 @@
-# CalmingNotificationsModule
+# #мамавыдохни: напоминания
 
-A description of this package.
+#### Исходник проекта [здесь](https://github.com/4440449/CalmMom)
+#### Проект целиком [здесь](https://github.com/4440449/Mom_Exhale)
